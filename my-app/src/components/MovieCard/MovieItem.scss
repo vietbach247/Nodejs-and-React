@@ -1,0 +1,32 @@
+.cardContainer {
+  margin-bottom: 20px;
+  height: 100%;
+}
+
+.cardMedia {
+  height: 340px; /* Độ cao cố định cho hình ảnh */
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.cardActions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.movieTitle {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  height: 48px; /* Độ cao cố định cho 2 dòng (mỗi dòng 24px) */
+  line-height: 24px; /* Căn giữa văn bản theo chiều dọc */
+  text-align: center; /* Căn giữa theo chiều ngang */
+}
