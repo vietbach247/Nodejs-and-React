@@ -3,10 +3,18 @@ import { countryValidate } from "../validations/country";
 
 export const getCountry = async (req, res, next) => {
   try {
-    const data = await Country.find();
+    const { search } = req.query;
+    let country;
+    if (search) {
+      const regex = new RegExp(search, "i");
+      country = await Country.find({ name: regex });
+    } else {
+      country = await Country.find();
+    }
+
     return res
       .status(200)
-      .json({ message: "Country fetched successfully", data });
+      .json({ message: "Country fetched successfully", country });
   } catch (error) {
     next(error);
   }

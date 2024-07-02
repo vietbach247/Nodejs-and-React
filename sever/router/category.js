@@ -11,6 +11,6 @@ const categoryRouter = Router();
 categoryRouter.get("/", getCategory);
 categoryRouter.post("/", createCategory);
 categoryRouter.delete("/:id", deleteCategory);
-categoryRouter.patch("/:id", updateCategory);
+categoryRouter.put("/:id", updateCategory);
 
 export default categoryRouter;

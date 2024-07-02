@@ -3,10 +3,19 @@ import { categoryValidate } from "../validations/category";
 
 export const getCategory = async (req, res, next) => {
   try {
-    const data = await Category.find();
+    const { search } = req.query;
+    let movie;
+
+    if (search) {
+      const regex = new RegExp(search, "i");
+      movie = await Category.find({ name: regex });
+    } else {
+      movie = await Category.find();
+    }
+
     return res
       .status(200)
-      .json({ message: "Category fetched successfully", data });
+      .json({ message: "Category fetched successfully", movie });
   } catch (error) {
     next(error);
   }
@@ -48,15 +57,23 @@ export const updateCategory = async (req, res, next) => {
     const { error } = categoryValidate.validate(req.body, {
       abortEarly: false,
     });
+
     if (error) {
-      return res.status(400).json({ message: error.details[0].message });
+      const errors = error.details.map((detail) => ({
+        path: detail.path[0],
+        message: detail.message,
+      }));
+      return res.status(400).json({ message: "Validation error", errors });
     }
+
     const category = await Category.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
+
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
+
     return res
       .status(200)
       .json({ message: "Category updated successfully", category });

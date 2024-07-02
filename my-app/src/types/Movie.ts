@@ -1,5 +1,8 @@
+import { Category } from "./Category";
+import { Country } from "./Country";
+
 export interface Movie {
-  _id: string;
+  _id: string | undefined;
   name: string;
   slug: string;
   origin_name: string;
@@ -13,6 +16,6 @@ export interface Movie {
   quality: string;
   lang: string;
   year: number;
-  category?: string[];
-  country?: string[];
+  category?: Category[] | string[];
+  country?: Country[] | string[];
 }

@@ -1,0 +1,21 @@
+.search-bar {
+  display: flex;
+  align-items: center;
+  input {
+    border-radius: 0;
+    background-color: #1c1c1c;
+    border: none;
+    color: #fff;
+    &::placeholder {
+      color: #ccc;
+    }
+  }
+  button {
+    border: none;
+    background: none;
+    color: #ccc;
+    &:hover {
+      color: #fff;
+    }
+  }
+}
