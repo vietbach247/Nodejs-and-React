@@ -15,6 +15,7 @@ export interface Movie {
   episode_current: string;
   quality: string;
   lang: string;
+  youtubeId: string;
   year: number;
   category?: Category[] | string[];
   country?: Country[] | string[];

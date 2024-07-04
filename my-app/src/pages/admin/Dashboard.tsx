@@ -29,6 +29,7 @@ const Dashboard: FC<Props> = ({ data, remove }) => {
             <th>Quality</th>
             <th>Language</th>
             <th>Year</th>
+            <th>YoutubeId</th>
             <th>Category</th>
             <th>Country</th>
             <th>Actions</th>
@@ -49,6 +50,8 @@ const Dashboard: FC<Props> = ({ data, remove }) => {
               <td>{movie.quality}</td>
               <td>{movie.lang}</td>
               <td>{movie.year}</td>
+              <td>{movie.youtubeId}</td>
+
               <td>
                 {movie.category
                   ?.map((cat) => (typeof cat === "string" ? cat : cat.name))

@@ -292,7 +292,12 @@ const MovieForm: React.FC<MovieFormProps> = ({ onMovie }) => {
           id="year"
           {...register("year")}
         />
+
         {errors.year && <p className="text-danger">{errors.year.message}</p>}
+      </div>
+      <div>
+        <label>YouTube ID:</label>
+        <input {...register("youtubeId")} />
       </div>
 
       <div className="mb-3">

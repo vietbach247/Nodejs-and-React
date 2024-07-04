@@ -59,6 +59,10 @@ const movieSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    youtubeId: {
+      type: String,
+      required: true,
+    },
     category: [
       {
         type: mongoose.Schema.Types.ObjectId,

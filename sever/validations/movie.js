@@ -16,6 +16,7 @@ export const movieValidate = Joi.object({
   episode_current: Joi.string().required(),
   quality: Joi.string().required(),
   lang: Joi.string().required(),
+  youtubeId: Joi.string().required(),
   year: Joi.number()
     .integer()
     .min(1900)
@@ -41,6 +42,7 @@ export const updateMovieValidate = Joi.object({
   episode_current: Joi.string(),
   quality: Joi.string(),
   lang: Joi.string(),
+  youtubeId: Joi.string(),
   year: Joi.number().integer().min(1900).max(new Date().getFullYear()),
   category: Joi.array().items(Joi.string()),
   country: Joi.array().items(Joi.string()),

@@ -1,11 +1,13 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ListCategory from "./ListCategory";
 import ListCountry from "./ListCountry";
 import { Category } from "../types/Category";
 import { Country } from "../types/Country";
+import { User } from "../types/User";
 import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
 import "./Header.scss"; // Import custom CSS for additional styling
+import constant from "../axios";
 
 type Props = {
   categories: Category[];
@@ -13,6 +15,42 @@ type Props = {
 };
 
 const Header: FC<Props> = ({ categories, countries }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      setToken(token);
+
+      if (token) {
+        try {
+          const response = await constant.get("/auth/profile");
+          setUser(response.data);
+        } catch (error) {
+          setError("Lỗi khi lấy thông tin người dùng");
+          console.error("Error fetching user profile:", error);
+        }
+      }
+    };
+
+    fetchUser();
+  }, [token]);
+
+  const handleLogout = async () => {
+    try {
+      if (confirm("Ban muon dang xuat khong?")) {
+        await constant.post("/auth/logout");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
   return (
     <header className="bg-dark text-white py-3">
       <div className="container d-flex justify-content-between align-items-center">
@@ -42,16 +80,6 @@ const Header: FC<Props> = ({ categories, countries }) => {
             <li className="nav-item">
               <ListCountry countries={countries} />
             </li>
-            <li className="nav-item">
-              <Link to="/login" className="nav-link text-white">
-                Login
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/register" className="nav-link text-white">
-                Register
-              </Link>
-            </li>
           </ul>
           <div className="search-bar ml-3">
             <input
@@ -63,6 +91,38 @@ const Header: FC<Props> = ({ categories, countries }) => {
               <i className="fa fa-search"></i>
             </button>
           </div>
+          <ul className="nav">
+            {token ? (
+              <>
+                <li className="nav-item">
+                  <span className="nav-link text-white">
+                    <Link to="/profile">Welcome {user?.name}</Link>
+                  </span>
+                </li>
+                <li className="nav-item">
+                  <button
+                    onClick={handleLogout}
+                    className="nav-link text-white btn btn-link"
+                  >
+                    Logout
+                  </button>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="nav-item">
+                  <Link to="/login" className="nav-link text-white">
+                    Login
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/register" className="nav-link text-white">
+                    Register
+                  </Link>
+                </li>
+              </>
+            )}
+          </ul>
         </nav>
       </div>
     </header>

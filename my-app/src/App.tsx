@@ -17,6 +17,9 @@ import { Country } from "./types/Country";
 import Header from "./components/Header";
 import ListMovieByCategory from "./pages/ListMovieByCategory";
 import ListMovieByCountry from "./pages/ListMovieCountry";
+import { User } from "./types/User";
+import ProFilePage from "./pages/ProFilePage";
+import PrivateRouter from "./components/PrivateRouter";
 
 function App() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -82,7 +85,6 @@ function App() {
   };
 
   const handleMovieSubmit = async (movieData: Movie) => {
-    console.log(movieData);
     try {
       if (movieData._id) {
         await constant.put(`/movie/${movieData._id}`, movieData);
@@ -96,16 +98,45 @@ function App() {
     }
   };
 
+  const handleRegister = async (userData: User) => {
+    try {
+      console.log(userData);
+      const response = await constant.post("/auth/register", userData);
+      navigate("/login");
+      return response.data;
+    } catch (error) {
+      console.error("Error registering user:", error);
+    }
+  };
+
+  const handleLogin = async (userData: User) => {
+    try {
+      const response = await constant.post("/auth/login", userData);
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.data));
+      navigate("/");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error logging in user:", error);
+    }
+  };
+
   return (
     <div className="d-flex flex-column min-vh-100">
-      <Header categories={categories} countries={countries} />{" "}
+      <Header categories={categories} countries={countries} />
+
       <main className="flex-fill">
         <Routes>
           <Route path="/" element={<HomePage data={movies} />} />
           <Route path="/movie-detail/:id" element={<MovieDetail />} />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/profile" element={<ProFilePage />} />
+          <Route path="/a" element={<PrivateRouter />} />
+          <Route path="/login" element={<LoginPage onUser={handleLogin} />} />
+          <Route
+            path="/register"
+            element={<RegisterPage onUser={handleRegister} />}
+          />
           <Route
             path="/category/:categoryId"
             element={<ListMovieByCategory />}
