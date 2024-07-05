@@ -16,10 +16,16 @@ const ProFilePage = () => {
       }
 
       try {
-        const response = await constant.get("/auth/profile");
+        const response = await constant.get("/auth/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setUser(response.data);
-        console.log(response.data);
-      } catch (error) {}
+      } catch (error) {
+        setError("Lỗi khi lấy thông tin người dùng");
+        console.error("Error fetching user profile:", error);
+      }
     };
 
     fetchProfile();

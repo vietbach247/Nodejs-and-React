@@ -96,7 +96,7 @@ export const Login = async (req, res, next) => {
     }
 
     const token = jwt.sign({ userId: user._id }, "secretKey", {
-      expiresIn: 20,
+      expiresIn: 3600,
     });
 
     user.password = undefined;

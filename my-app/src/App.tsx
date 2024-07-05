@@ -20,6 +20,7 @@ import ListMovieByCountry from "./pages/ListMovieCountry";
 import { User } from "./types/User";
 import ProFilePage from "./pages/ProFilePage";
 import PrivateRouter from "./components/PrivateRouter";
+import FavoritesList from "./components/Favorite";
 
 function App() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -132,6 +133,7 @@ function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/profile" element={<ProFilePage />} />
           <Route path="/a" element={<PrivateRouter />} />
+          <Route path="/favorite" element={<FavoritesList />} />
           <Route path="/login" element={<LoginPage onUser={handleLogin} />} />
           <Route
             path="/register"

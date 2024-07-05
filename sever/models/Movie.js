@@ -2,11 +2,6 @@ import mongoose from "mongoose";
 
 const movieSchema = new mongoose.Schema(
   {
-    modified: {
-      time: {
-        type: Date,
-      },
-    },
     name: {
       type: String,
       required: true,
@@ -63,6 +58,10 @@ const movieSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    trailerId: {
+      type: String,
+      required: true,
+    },
     category: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -77,6 +76,11 @@ const movieSchema = new mongoose.Schema(
         required: false,
       },
     ],
+    // Trường số lượng yêu thích
+    favoriteCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

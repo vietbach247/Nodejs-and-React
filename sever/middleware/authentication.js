@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-export const authentication = async (req, res, next) => {
+export const authentication = (req, res, next) => {
   try {
     const authHeader = req.header("Authorization");
     const token = authHeader && authHeader.split(" ")[1];
@@ -9,10 +9,15 @@ export const authentication = async (req, res, next) => {
       return res.status(401).json({ message: "Vui lòng đăng nhập" });
     }
 
-    const decoded = jwt.verify(token, "secretKey");
-    req.user = decoded;
-    next();
+    jwt.verify(token, "secretKey", (err, decoded) => {
+      if (err) {
+        return res.status(403).json({ message: "Token không hợp lệ" });
+      }
+      req.user = decoded;
+      next();
+    });
   } catch (error) {
-    next();
+    console.error("Error in authentication middleware:", error);
+    res.status(500).json({ message: "Lỗi máy chủ" });
   }
 };

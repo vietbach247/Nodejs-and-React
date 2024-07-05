@@ -6,6 +6,7 @@ export const movieValidate = Joi.object({
   }),
   name: Joi.string().required(),
   slug: Joi.string().required(),
+  price: Joi.number().required(),
   origin_name: Joi.string().required(),
   type: Joi.string().required(),
   poster_url: Joi.string().uri().required(),
@@ -17,6 +18,7 @@ export const movieValidate = Joi.object({
   quality: Joi.string().required(),
   lang: Joi.string().required(),
   youtubeId: Joi.string().required(),
+  trailerId: Joi.string().required(),
   year: Joi.number()
     .integer()
     .min(1900)
