@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Favorite } from "../types/Favorite";
 import constant from "../axios";
 
@@ -18,13 +18,11 @@ const FavoritesList = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
-        console.log(response.data);
+        });   
 
         setFavorites(response.data);
       } catch (error) {
         console.error("Error fetching favorites:", error);
-        // Handle fetch error
       }
     };
 

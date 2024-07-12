@@ -81,7 +81,6 @@ const ListCategory: React.FC<ListCategoryProps> = ({ categories }) => {
         const response = await constant.get("/category");
         const { data } = response;
         if (data && Array.isArray(data.movie)) {
-          // Không cần setCategory nữa vì đã nhận categories từ prop
         } else {
           console.error("API returned unexpected data format:", data);
         }
@@ -107,7 +106,7 @@ const ListCategory: React.FC<ListCategoryProps> = ({ categories }) => {
       >
         Thể loại
       </Button>
-      
+
       <StyledMenu
         id="demo-customized-menu"
         MenuListProps={{

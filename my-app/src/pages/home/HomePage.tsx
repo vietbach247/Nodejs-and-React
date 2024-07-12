@@ -14,9 +14,7 @@ const HomePage: FC<Props> = ({ data }) => {
         {data.length > 0 &&
           data.map((movie) => (
             <div key={movie._id} className="col-md-4 mb-4">
-              <Link to={`/movie-detail/${movie._id}`}>
-                <MovieCard movie={movie} />
-              </Link>
+              <MovieCard movie={movie} />
             </div>
           ))}
       </div>

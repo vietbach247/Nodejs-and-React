@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import constant from "../axios";
 import { Movie } from "../types/Movie";
 import MovieCard from "../components/MovieCard/MovieItem";
+import { Container, Grid, Typography, Box } from "@mui/material";
 
 const MovieDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -32,42 +33,69 @@ const MovieDetail = () => {
   }, [id]);
 
   if (loading) {
-    return <div className="text-center">Loading...</div>;
+    return <Typography align="center">Loading...</Typography>;
   }
 
   if (error || !movie) {
     return (
-      <div className="text-center text-danger">
+      <Typography align="center" color="error">
         {error || "Movie not found"}
-      </div>
+      </Typography>
     );
   }
 
   const videoId = movie.youtubeId;
+  const trailerId = movie.trailerId;
 
   return (
-    <div className="row">
-      <div key={movie._id} className="col-md-8 mb-4">
-        <h2>{movie.name}</h2>
-        <p>{movie.slug}</p>
+    <Container>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={8}>
+          <Typography variant="h4">{movie.name}</Typography>
+          <Typography variant="subtitle1">{movie.slug}</Typography>
 
-        <div className="embed-responsive embed-responsive-16by9">
-          <iframe
-            width="560"
-            height="315"
-            src={`https://www.youtube.com/embed/${videoId}`}
-            title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-          ></iframe>
-        </div>
-      </div>
-      <div className="col-md-4 mb-4">
-        <MovieCard movie={movie} />
-      </div>
-    </div>
+          <Box my={2}>
+            <Box sx={{ position: "relative", paddingTop: "56.25%" }}>
+              <iframe
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                }}
+                src={`https://www.youtube.com/embed/${videoId}`}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              ></iframe>
+            </Box>
+          </Box>
+          <Box my={2}>
+            <Box sx={{ position: "relative", paddingTop: "56.25%" }}>
+              <iframe
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                }}
+                src={`https://www.youtube.com/embed/${trailerId}`}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              ></iframe>
+            </Box>
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <MovieCard movie={movie} />
+        </Grid>
+      </Grid>
+    </Container>
   );
 };
 

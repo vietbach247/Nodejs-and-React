@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Movie } from "../../types/Movie";
 import constant from "../../axios";
 import { Category } from "../../types/Category";
 import { Country } from "../../types/Country";
 import Select from "react-select";
+import { Typography } from "@mui/material";
 
-interface MovieFormProps {
-  onMovie: (movieData: Movie) => Promise<void>;
-}
-
-const MovieForm: React.FC<MovieFormProps> = ({ onMovie }) => {
+const MovieForm: React.FC = () => {
   const { id } = useParams<{ id?: string | undefined }>();
   const {
     register,
@@ -20,11 +17,16 @@ const MovieForm: React.FC<MovieFormProps> = ({ onMovie }) => {
     setError,
     formState: { errors },
   } = useForm<Movie>();
-  const [backendError, setBackendError] = useState<string | null>(null);
+  const [backendError, setBackendError] = useState<{ [key: string]: string }>(
+    {}
+  );
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [countries, setCountries] = useState<Country[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -84,28 +86,30 @@ const MovieForm: React.FC<MovieFormProps> = ({ onMovie }) => {
     }
   }, [id, reset]);
 
-  const onSubmit: SubmitHandler<Movie> = async (data) => {
+  const handleMovieSubmit: SubmitHandler<Movie> = async (movieData) => {
     try {
-      const { _id, ...restData } = data;
-      const categoriesToSubmit = selectedCategories.map(
-        (categoryId) => categoryId
-      );
-      const countriesToSubmit = selectedCountries.map((countryId) => countryId); // Giữ nguyên ObjectId
-      await onMovie({
-        ...restData,
-        _id: id,
-        category: categoriesToSubmit,
-        country: countriesToSubmit,
-      });
+      if (movieData._id) {
+        await constant.put(`/movie/${movieData._id}`, movieData);
+      } else {
+        await constant.post("/movie", movieData);
+        setMovies([...movies, movieData]);
+      }
+      navigate("/admin");
     } catch (error: any) {
-      if (error.response && error.response.data) {
-        const { message } = error.response.data;
-        setBackendError(message);
-        if (error.response.data.errors) {
-          error.response.data.errors.forEach((err: any) => {
-            setError(err.path, { message: err.message });
-          });
-        }
+      if (error.response && error.response.data && error.response.data.errors) {
+        const validationErrors: { [key: string]: string } = {};
+        error.response.data.errors.forEach((err: any) => {
+          validationErrors[err.param] = err.msg;
+        });
+        setBackendError(validationErrors);
+      } else if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        setBackendError({ form: error.response.data.message });
+      } else {
+        setBackendError({ form: "Có lỗi xảy ra, vui lòng thử lại" });
       }
     }
   };
@@ -121,9 +125,9 @@ const MovieForm: React.FC<MovieFormProps> = ({ onMovie }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(handleMovieSubmit)}>
       <h1>{id ? "Chỉnh sửa Phim" : "Thêm Phim Mới"}</h1>
-      {backendError && <p className="text-danger">{backendError}</p>}
+
       <div className="mb-3">
         <label htmlFor="name" className="form-label">
           Tên Phim
@@ -292,14 +296,22 @@ const MovieForm: React.FC<MovieFormProps> = ({ onMovie }) => {
           id="year"
           {...register("year")}
         />
-
         {errors.year && <p className="text-danger">{errors.year.message}</p>}
       </div>
-      <div>
-        <label>YouTube ID:</label>
-        <input {...register("youtubeId")} />
+      <div className="mb-3">
+        <label htmlFor="youtubeId" className="form-label">
+          YouTube ID
+        </label>
+        <input
+          type="text"
+          className="form-control"
+          id="youtubeId"
+          {...register("youtubeId")}
+        />
+        {errors.youtubeId && (
+          <p className="text-danger">{errors.youtubeId.message}</p>
+        )}
       </div>
-
       <div className="mb-3">
         <label htmlFor="category" className="form-label">
           Thể loại
@@ -317,7 +329,6 @@ const MovieForm: React.FC<MovieFormProps> = ({ onMovie }) => {
           <p className="text-danger">Vui lòng chọn ít nhất một thể loại.</p>
         )}
       </div>
-
       <div className="mb-3">
         <label htmlFor="country" className="form-label">
           Quốc gia
@@ -335,7 +346,9 @@ const MovieForm: React.FC<MovieFormProps> = ({ onMovie }) => {
           <p className="text-danger">Vui lòng chọn ít nhất một quốc gia.</p>
         )}
       </div>
-
+      <Typography color="error" align="center">
+        {backendError.form}
+      </Typography>
       <div className="mb-3">
         <button className="btn btn-primary w-100" type="submit">
           {id ? "Chỉnh sửa Phim" : "Thêm Phim Mới"}

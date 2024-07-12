@@ -10,17 +10,18 @@ import {
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { User } from "../types/User";
+import constant from "../axios";
+import { useNavigate } from "react-router-dom";
 
-type Props = {
-  onUser: (userData: User) => Promise<void>;
-};
+type Props = {};
 
-const LoginPage: React.FC<Props> = ({ onUser }) => {
+const LoginPage: React.FC<Props> = ({}) => {
   const [formData, setFormData] = useState<User>({
     username: "",
     password: "",
   });
 
+  const navigate = useNavigate();
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,12 +31,21 @@ const LoginPage: React.FC<Props> = ({ onUser }) => {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleLogin = async (userData: User) => {
     try {
-      await onUser(formData);
+      const response = await constant.post("/auth/login", userData);
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.data));
+      navigate("/");
+      window.location.reload();
     } catch (error: any) {
-      if (
+      if (error.response && error.response.data && error.response.data.errors) {
+        const validationErrors: { [key: string]: string } = {};
+        error.response.data.errors.forEach((err: any) => {
+          validationErrors[err.param] = err.msg;
+        });
+        setErrors(validationErrors);
+      } else if (
         error.response &&
         error.response.data &&
         error.response.data.message
@@ -47,6 +57,12 @@ const LoginPage: React.FC<Props> = ({ onUser }) => {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setErrors({});
+    await handleLogin(formData);
+  };
+
   return (
     <Container component="main" maxWidth="xs">
       <Paper elevation={3} sx={{ padding: 4, marginTop: 8 }}>
@@ -56,15 +72,9 @@ const LoginPage: React.FC<Props> = ({ onUser }) => {
         <Typography component="h1" variant="h5" align="center" sx={{ mt: 2 }}>
           Đăng nhập
         </Typography>
-        {errors.form && (
-          <Typography color="error" align="center">
-            {errors.form}
-          </Typography>
-        )}
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <TextField
             margin="normal"
-            required
             fullWidth
             id="username"
             label="Tên đăng nhập"
@@ -73,10 +83,15 @@ const LoginPage: React.FC<Props> = ({ onUser }) => {
             autoFocus
             value={formData.username}
             onChange={handleChange}
+            error={!!errors.username}
+            helperText={
+              errors.username && (
+                <span className="text-danger">{errors.username}</span>
+              )
+            }
           />
           <TextField
             margin="normal"
-            required
             fullWidth
             name="password"
             label="Mật khẩu"
@@ -85,7 +100,18 @@ const LoginPage: React.FC<Props> = ({ onUser }) => {
             autoComplete="current-password"
             value={formData.password}
             onChange={handleChange}
+            error={!!errors.password}
+            helperText={
+              errors.password && (
+                <span className="text-danger">{errors.password}</span>
+              )
+            }
           />
+           {errors.form && (
+          <Typography color="error" align="center">
+            {errors.form}
+          </Typography>
+        )}
           <Button
             type="submit"
             fullWidth

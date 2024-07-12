@@ -115,7 +115,7 @@ const Countrie: React.FC<CountryProps> = ({ countries }) => {
         open={open}
         onClose={handleClose}
       >
-        {countries.map((country) => (
+        {countries.map((country, index) => (
           <MenuItem
             key={country._id}
             onClick={handleClose}

@@ -76,11 +76,16 @@ const movieSchema = new mongoose.Schema(
         required: false,
       },
     ],
-    // Trường số lượng yêu thích
     favoriteCount: {
       type: Number,
       default: 0,
     },
+    usersLiked: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,

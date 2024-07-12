@@ -1,8 +1,6 @@
 import { movieValidate, updateMovieValidate } from "../validations/movie";
 
 import Movie from "../models/Movie";
-import Category from "../models/Category";
-import Country from "../models/Country";
 
 export const createMovie = async (req, res, next) => {
   const { error } = movieValidate.validate(req.body, {

@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { User } from "../types/User";
 import constant from "../axios";
-import axios from "axios";
 
 const ProFilePage = () => {
   const [user, setUser] = useState<User | null>(null);

@@ -10,12 +10,12 @@ import {
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { User } from "../types/User";
+import { useNavigate } from "react-router-dom";
+import constant from "../axios";
 
-type Props = {
-  onUser: (userData: User) => Promise<void>;
-};
+const RegisterPage: React.FC = () => {
+  const navigate = useNavigate();
 
-const RegisterPage: React.FC<Props> = ({ onUser }) => {
   const [formData, setFormData] = useState<User>({
     username: "",
     email: "",
@@ -36,12 +36,19 @@ const RegisterPage: React.FC<Props> = ({ onUser }) => {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleRegister = async (userData: User) => {
     try {
-      await onUser(formData);
+      const response = await constant.post("/auth/register", userData);
+      navigate("/login");
+      return response.data;
     } catch (error: any) {
-      if (
+      if (error.response && error.response.data && error.response.data.errors) {
+        const validationErrors: { [key: string]: string } = {};
+        error.response.data.errors.forEach((err: any) => {
+          validationErrors[err.param] = err.msg;
+        });
+        setErrors(validationErrors);
+      } else if (
         error.response &&
         error.response.data &&
         error.response.data.message
@@ -51,6 +58,12 @@ const RegisterPage: React.FC<Props> = ({ onUser }) => {
         setErrors({ form: "Có lỗi xảy ra, vui lòng thử lại" });
       }
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setErrors({});
+    await handleRegister(formData);
   };
 
   return (
@@ -70,7 +83,6 @@ const RegisterPage: React.FC<Props> = ({ onUser }) => {
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <TextField
             margin="normal"
-            required
             fullWidth
             id="username"
             label="Tên đăng nhập"
@@ -79,10 +91,11 @@ const RegisterPage: React.FC<Props> = ({ onUser }) => {
             autoFocus
             value={formData.username}
             onChange={handleChange}
+            error={!!errors.username}
+            helperText={errors.username}
           />
           <TextField
             margin="normal"
-            required
             fullWidth
             id="email"
             label="Email"
@@ -90,10 +103,11 @@ const RegisterPage: React.FC<Props> = ({ onUser }) => {
             autoComplete="email"
             value={formData.email}
             onChange={handleChange}
+            error={!!errors.email}
+            helperText={errors.email}
           />
           <TextField
             margin="normal"
-            required
             fullWidth
             name="password"
             label="Mật khẩu"
@@ -102,10 +116,11 @@ const RegisterPage: React.FC<Props> = ({ onUser }) => {
             autoComplete="current-password"
             value={formData.password}
             onChange={handleChange}
+            error={!!errors.password}
+            helperText={errors.password}
           />
           <TextField
             margin="normal"
-            required
             fullWidth
             name="confirmPassword"
             label="Xác nhận mật khẩu"
@@ -114,10 +129,11 @@ const RegisterPage: React.FC<Props> = ({ onUser }) => {
             autoComplete="confirm-password"
             value={formData.confirmPassword}
             onChange={handleChange}
+            error={!!errors.confirmPassword}
+            helperText={errors.confirmPassword}
           />
           <TextField
             margin="normal"
-            required
             fullWidth
             id="name"
             label="Tên"
@@ -125,10 +141,11 @@ const RegisterPage: React.FC<Props> = ({ onUser }) => {
             autoComplete="name"
             value={formData.name}
             onChange={handleChange}
+            error={!!errors.name}
+            helperText={errors.name}
           />
           <TextField
             margin="normal"
-            required
             fullWidth
             id="phone"
             label="Số điện thoại"
@@ -136,6 +153,8 @@ const RegisterPage: React.FC<Props> = ({ onUser }) => {
             autoComplete="phone"
             value={formData.phone}
             onChange={handleChange}
+            error={!!errors.phone}
+            helperText={errors.phone}
           />
           <Button
             type="submit"

@@ -16,6 +16,7 @@ export interface Movie {
   quality: string;
   lang: string;
   youtubeId: string;
+  trailerId: string;
   year: number;
   price: number;
   category?: Category[] | string[];

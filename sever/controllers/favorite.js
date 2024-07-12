@@ -2,7 +2,9 @@ import Movie from "../models/Movie";
 import Favorite from "../models/Favorite";
 
 export const addToFavorite = async (req, res, next) => {
-  const { userId, movieId } = req.body;
+  const { movieId } = req.body;
+  const userId = req.user.userId;
+
   try {
     let favorite = await Favorite.findOne({ user: userId });
 
@@ -31,7 +33,8 @@ export const addToFavorite = async (req, res, next) => {
 };
 
 export const removeFromFavorite = async (req, res, next) => {
-  const { userId, movieId } = req.body;
+  const { movieId } = req.body;
+  const userId = req.user.userId;
 
   try {
     let favorite = await Favorite.findOne({ user: userId });
@@ -40,9 +43,17 @@ export const removeFromFavorite = async (req, res, next) => {
       return res.status(404).json({ message: "Mục yêu thích không tồn tại" });
     }
 
-    favorite.movies = favorite.movies.filter(
-      (m) => m.movie.toString() !== movieId
+    const movieIndex = favorite.movies.findIndex(
+      (m) => m.toString() === movieId
     );
+
+    if (movieIndex === -1) {
+      return res
+        .status(404)
+        .json({ message: "Phim không có trong mục yêu thích" });
+    }
+
+    favorite.movies.splice(movieIndex, 1);
     await favorite.save();
 
     await Movie.findByIdAndUpdate(movieId, { $inc: { favoriteCount: -1 } });
@@ -55,6 +66,7 @@ export const removeFromFavorite = async (req, res, next) => {
       .json({ message: "Có lỗi xảy ra khi xoá khỏi mục yêu thích" });
   }
 };
+
 export const getFavorites = async (req, res, next) => {
   try {
     const userId = req.user.userId;

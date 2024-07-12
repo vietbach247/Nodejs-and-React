@@ -8,7 +8,11 @@ const favoriteSchema = new mongoose.Schema(
       required: true,
     },
     movies: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Movie", required: true },
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Movie",
+        required: true,
+      },
     ],
   },
   {
