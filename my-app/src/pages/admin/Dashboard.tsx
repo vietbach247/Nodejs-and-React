@@ -1,13 +1,56 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Movie } from "../../types/Movie";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import constant from "../../axios";
 
-type Props = {
-  data: Movie[];
-  remove: (id: string | undefined) => void;
-};
+type Props = {};
 
-const Dashboard: FC<Props> = ({ data, remove }) => {
+const Dashboard: FC<Props> = () => {
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Vui lòng đăng nhập");
+        navigate("/login", { replace: true });
+        return;
+      }
+      try {
+        const movieResponse = await constant.get("/movie", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const movieData = movieResponse.data.data;
+        if (Array.isArray(movieData)) {
+          setMovies(movieData);
+        } else {
+          console.error(
+            "API returned unexpected movie data format:",
+            movieData
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [navigate]);
+
+  const handleRemove = async (id: string | undefined) => {
+    try {
+      if (window.confirm("Are you sure?")) {
+        await constant.delete(`/movie/${id}`);
+        setMovies(movies.filter((movie) => movie._id !== id));
+      }
+    } catch (error) {
+      console.error("Error removing movie:", error);
+    }
+  };
+
   return (
     <div className="dashboard">
       <h2>Movie Dashboard</h2>
@@ -36,7 +79,7 @@ const Dashboard: FC<Props> = ({ data, remove }) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((movie) => (
+          {movies.map((movie) => (
             <tr key={movie._id}>
               <td>{movie._id}</td>
               <td>{movie.name}</td>
@@ -51,7 +94,6 @@ const Dashboard: FC<Props> = ({ data, remove }) => {
               <td>{movie.lang}</td>
               <td>{movie.year}</td>
               <td>{movie.youtubeId}</td>
-
               <td>
                 {movie.category
                   ?.map((cat) => (typeof cat === "string" ? cat : cat.name))
@@ -66,7 +108,7 @@ const Dashboard: FC<Props> = ({ data, remove }) => {
                 <Link to={`/admin/movie-edit/${movie._id}`}>Edit</Link>
                 <button
                   className="btn btn-danger btn-sm"
-                  onClick={() => remove(movie._id)}
+                  onClick={() => handleRemove(movie._id)}
                 >
                   Delete
                 </button>

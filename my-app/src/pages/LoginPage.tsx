@@ -84,11 +84,7 @@ const LoginPage: React.FC<Props> = ({}) => {
             value={formData.username}
             onChange={handleChange}
             error={!!errors.username}
-            helperText={
-              errors.username && (
-                <span className="text-danger">{errors.username}</span>
-              )
-            }
+            helperText={errors?.username}
           />
           <TextField
             margin="normal"
@@ -107,11 +103,11 @@ const LoginPage: React.FC<Props> = ({}) => {
               )
             }
           />
-           {errors.form && (
-          <Typography color="error" align="center">
-            {errors.form}
-          </Typography>
-        )}
+          {errors.form && (
+            <Typography color="error" align="center">
+              {errors.form}
+            </Typography>
+          )}
           <Button
             type="submit"
             fullWidth

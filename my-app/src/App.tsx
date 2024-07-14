@@ -88,7 +88,7 @@ function App() {
 
       <main className="flex-fill">
         <Routes>
-          <Route path="/" element={<HomePage data={movies} />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/movie-detail/:id" element={<MovieDetail />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/profile" element={<ProFilePage />} />
@@ -104,10 +104,7 @@ function App() {
 
           <Route path="*" element={<NotFound />} />
 
-          <Route
-            path="/admin"
-            element={<Dashboard data={movies} remove={handleRemove} />}
-          />
+          <Route path="/admin" element={<Dashboard />} />
           <Route path="/admin/movie-add" element={<MovieForm />} />
           <Route path="/admin/movie-edit/:id" element={<MovieForm />} />
         </Routes>

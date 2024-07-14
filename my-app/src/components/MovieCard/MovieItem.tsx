@@ -28,26 +28,9 @@ const MovieCard: FC<MovieCardProps> = ({ movie }) => {
         console.error("Vui lòng đăng nhập");
         return;
       }
-      if (liked) {
-        await constant.delete(`/favorite/`, {
-          data: { movieId: movie._id },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      } else {
-        await constant.post(
-          "/favorite",
-          { movieId: movie._id },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      }
+
       const response = await constant.post(
-        "/movie/like",
+        "/favorite",
         { movieId: movie._id },
         {
           headers: {
@@ -58,8 +41,9 @@ const MovieCard: FC<MovieCardProps> = ({ movie }) => {
 
       if (response.data && response.data.isLiked !== undefined) {
         setLiked(response.data.isLiked);
+      } else {
+        setLiked(!liked);
       }
-      setLiked(!liked);
     } catch (error) {
       console.error("Lỗi khi thích/phủ nhận phim:", error);
     }
@@ -67,7 +51,10 @@ const MovieCard: FC<MovieCardProps> = ({ movie }) => {
 
   return (
     <Card sx={{ maxWidth: 345 }}>
-      <Link to={`/movie-detail/${movie._id}`}>
+      <Link
+        to={`/movie-detail/${movie._id}`}
+        style={{ textDecoration: "none" }}
+      >
         <CardMedia
           component="img"
           alt={movie.name}
@@ -75,7 +62,6 @@ const MovieCard: FC<MovieCardProps> = ({ movie }) => {
           image={movie.poster_url}
           sx={{ objectFit: "cover" }}
         />
-
         <CardContent sx={{ textAlign: "center" }}>
           <Typography variant="h5" component="div">
             {movie.name}
@@ -84,10 +70,16 @@ const MovieCard: FC<MovieCardProps> = ({ movie }) => {
             {movie.slug}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Thể loại: {movie.category?.join(", ")}
+            Thể loại:{" "}
+            {movie.category
+              ?.map((cat) => (typeof cat === "string" ? cat : cat.name))
+              .join(", ")}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Quốc gia: {movie.country?.join(", ")}
+            Quốc gia:{" "}
+            {movie.country
+              ?.map((ctry) => (typeof ctry === "string" ? ctry : ctry.name))
+              .join(", ")}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Thời lượng: {movie.time}

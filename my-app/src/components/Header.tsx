@@ -30,7 +30,7 @@ const Header: FC<Props> = ({ categories, countries }) => {
           setUser(response.data);
         } catch (error) {
           setError("Lỗi khi lấy thông tin người dùng");
-          console.error("Error fetching user profile:", error);
+          console.error("Error fe+tching user profile:", error);
         }
       }
     };
